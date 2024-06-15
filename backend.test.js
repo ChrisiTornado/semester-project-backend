@@ -1,5 +1,5 @@
 
-describe('Always true tests', () => {
+describe('backend tests', () => {
     test("Test adding todo", () => {
         expect(true).toBe(true);
     })

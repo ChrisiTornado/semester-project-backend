@@ -6,6 +6,25 @@ on:
       - main
 
 jobs:
+  snyk-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Snyk security test
+        run: snyk test --all-projects --json > snyk-results.json
+
+      - name: Upload Snyk results
+        uses: actions/upload-artifact@v2
+        with:
+          name: snyk-results
+          path: snyk-results.json
+  
   build:
     runs-on: ubuntu-latest
 
@@ -24,17 +43,12 @@ jobs:
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
-
-        - name: Print Docker Hub credentials
-          run: |
-            echo "ChrisiTornado"
-            echo "VixolPlays1"
   
         - name: Push Docker image to Docker Hub
           env:
             DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
             DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           run: |
-            docker login -u "christophe.andunda@gmail.com" -p "VixolPlays1"
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker build -t yourdockerhubusername/my-image-name:latest .
             docker push yourdockerhubusername/my-image-name:latest

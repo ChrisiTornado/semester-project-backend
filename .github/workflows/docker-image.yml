@@ -24,6 +24,11 @@ jobs:
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
+
+        - name: Print Docker Hub credentials
+          run: |
+            echo "DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}"
+            echo "DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}"
   
         - name: Push Docker image to Docker Hub
           env:

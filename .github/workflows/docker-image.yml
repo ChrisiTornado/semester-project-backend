@@ -27,14 +27,14 @@ jobs:
 
         - name: Print Docker Hub credentials
           run: |
-            echo "DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}"
-            echo "DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}"
+            echo "ChrisiTornado"
+            echo "VixolPlays1"
   
         - name: Push Docker image to Docker Hub
           env:
             DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
             DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           run: |
-            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            docker login -u "ChrisiTornado" -p "VixolPlays1"
             docker build -t yourdockerhubusername/my-image-name:latest .
             docker push yourdockerhubusername/my-image-name:latest

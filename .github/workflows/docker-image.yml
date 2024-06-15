@@ -6,25 +6,19 @@ on:
       - main
 
 jobs:
-  snyk-test:
+  security:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-
-      - name: Snyk security test
-        run: snyk test --all-projects --json > snyk-results.json
-
-      - name: Upload Snyk results
-        uses: actions/upload-artifact@v2
+      - uses: actions/checkout@master
+      - uses: snyk/actions/setup@master
+      - uses: actions/setup-go@v1
         with:
-          name: snyk-results
-          path: snyk-results.json
-  
+          go-version: '1.13'
+      - name: Snyk monitor
+        run: snyk test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          
   build:
     runs-on: ubuntu-latest
 

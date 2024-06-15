@@ -16,19 +16,20 @@ jobs:
         with:
           node-version: '18.x'
       - run: npm ci
-      - run: npm start
 
-
-  # Deliver Stage - Push Docker image to Docker Hub
-  # deliver:
-   #  runs-on: ubuntu-latest
-   #  needs: build
-   #  steps:
-   #    - name: Checkout code
-   #      uses: actions/checkout@v4
-
-   #    - name: Push Docker image to Docker Hub
-    #     run: |
-     #      docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      #     docker tag my-image-name:$(date +%s) yourdockerhubusername/my-image-name:latest
-       #    docker push yourdockerhubusername/my-image-name:latest
+  deliver:
+      runs-on: ubuntu-latest
+      needs: build
+  
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+  
+        - name: Push Docker image to Docker Hub
+          env:
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+            DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          run: |
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            docker build -t yourdockerhubusername/my-image-name:latest .
+            docker push yourdockerhubusername/my-image-name:latest

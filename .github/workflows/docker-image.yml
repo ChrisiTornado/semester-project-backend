@@ -7,28 +7,35 @@ on:
 
 jobs:
   lint:
+    name: Linting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run lint
         run: npm run lint
-        
+
   security:
+    name: Security scan
     runs-on: ubuntu-latest
-    #needs: lint
     steps:
-      - uses: actions/checkout@v4
-      - uses: snyk/actions/setup@v4
-      - uses: actions/setup-go@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Snyk
+        uses: snyk/actions/setup@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
         with:
           go-version: '1.13'
 
@@ -38,13 +45,13 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   test:
+    name: Unit tests
     runs-on: ubuntu-latest
-    #needs: security
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
@@ -56,8 +63,9 @@ jobs:
         run: npm test
 
   build:
+    name: Build Docker image
     runs-on: ubuntu-latest
-    #needs: test
+    needs: test
     services:
       mariadb:
         image: mariadb:11.5.1-ubi9-rc
@@ -73,12 +81,11 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
@@ -90,6 +97,7 @@ jobs:
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/todos-backend:latest .
 
   deliver:
+    name: Deploy to Docker Hub
     runs-on: ubuntu-latest
     needs: build
     steps:

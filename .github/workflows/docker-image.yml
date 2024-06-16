@@ -97,20 +97,25 @@ jobs:
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/todos-backend:latest .
 
   deliver:
-    name: Deploy to Docker Hub
+    name: Deliver Docker image
     runs-on: ubuntu-latest
     needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: |
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-      - name: Push Docker image to Docker Hub
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/todos-backend:latest
+      - name: Load Docker Buildx
+        run: docker buildx create --use
+
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Tag Docker image
+        run: docker tag ${{ secrets.DOCKER_USERNAME }}/todos-backend:latest ${{ secrets.DOCKER_USERNAME }}/todos-backend:${{ github.sha }}
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/todos-backend:${{ github.sha }}
+

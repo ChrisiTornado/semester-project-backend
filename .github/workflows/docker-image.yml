@@ -86,8 +86,6 @@ jobs:
       - name: Run Docker Compose
         run: docker-compose up -d
 
-      - run: npm ci
-
       - name: Build Docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/todos-backend:latest .
 

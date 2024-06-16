@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "jest",
-    "lint": "./node_modules/.bin/eslint ./routes/todos.js ./bin/www"
+    "lint": "./node_modules/.bin/eslint ./routes/todos.js ./bin/www ./app.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
